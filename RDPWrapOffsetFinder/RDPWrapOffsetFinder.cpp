@@ -15,6 +15,21 @@ typedef struct
     WORD Children;
 } VS_VERSIONINFO, *PVS_VERSIONINFO;
 
+void PrintSymbolOffset(HANDLE hProcess, const wchar_t *symbolName, const char *arch)
+{
+    SYMBOL_INFOW symbol;
+    symbol.SizeOfStruct = sizeof(SYMBOL_INFOW);
+
+    if (SymFromNameW(hProcess, symbolName, &symbol))
+    {
+        printf("%s.%s=%llX\n", symbolName, arch, symbol.Address - symbol.ModBase);
+    }
+    else
+    {
+        printf("ERROR: %s not found\n", symbolName);
+    }
+}
+
 void LocalOnlyPatch(ZydisDecoder *decoder, size_t RVA, size_t base, size_t target);
 
 void DefPolicyPatch(ZydisDecoder *decoder, size_t RVA, size_t base);
@@ -150,19 +165,8 @@ int main(int argc, char **argv)
             puts("ERROR: IsLicenseTypeLocalOnly not found");
     }
     else
-        puts("ERROR: GetInstanceOfTSLicense not found");
-
-    void PrintSymbolOffset(HANDLE hProcess, const wchar_t *symbolName, const char *arch)
     {
-        SYMBOL_INFO symbol;
-        if (SymFromNameW(hProcess, symbolName, &symbol))
-        {
-            printf("%s.%s=%llX\n", symbolName, arch, symbol.Address - symbol.ModBase);
-        }
-        else
-        {
-            printf("ERROR: %s not found\n", symbolName);
-        }
+        puts("ERROR: GetInstanceOfTSLicense not found");
     }
 
     if (SymFromNameW(hProcess, L"CSLQuery::Initialize", &symbol))
