@@ -3,6 +3,8 @@
 #include <Dbghelp.h>
 #include <Zydis/Zydis.h>
 
+#pragma comment (lib, "Dbghelp.lib")
+
 typedef struct {
     WORD             wLength;
     WORD             wValueLength;
